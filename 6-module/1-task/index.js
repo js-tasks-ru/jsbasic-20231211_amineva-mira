@@ -13,48 +13,44 @@
  *
  */
 export default class UserTable {
-  
   constructor(rows) {
-    this.rows = rows;
-    this.table = elem; //заходит в сеттор elem
-  }
+    this.elem=document.createElement('table');
+    document.body.append(this.elem);
 
-  set elem (rows) {
-    console.log('hhh')
-    table= document.createElement('table'); 
+    this.elem.innerHTML=`
+    <thead>
+        <tr>
+            <td>Имя</td>
+            <td>Возраст</td>
+            <td>Зарплата</td>
+            <td>Город</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody class='rows'>
+       
+    </tbody>`
 
-    thead= document.createElement('thead');
-    table.prepend(thead);
+    this.tbodyTable=document.querySelector('.rows');
 
-    tr= document.createElement('tr');
-    thead.append(tr);
+    let cellsWithData=rows.map(obj => Object.values(obj).map(item => `<td>${item}</td>`).join(' '))
 
-    for(let i=0; i<=this.rows.length; i++) {
-      let keyObject=Object.keys(this.rows[i]).map(item => {
-        th=document.createElement('th');
-        th=item;
-        thead.insertAdjacentElement('beforeEnd', th);
-      }) 
+
+    for(let item of cellsWithData) {
+        this.trTable=document.createElement('tr');
+        this.trTable.insertAdjacentHTML('beforeend', item);
+        this.trTable.insertAdjacentHTML('beforeend', `<td><button>X</button></td>`);
+        this.tbodyTable.append(this.trTable)
     }
 
-    let tbody=document.createElement('tbody');
-
-    for (let i=0; i<=this.rows.length-1; i++) {
-      let keyObject=Object.values(this.rows[i]).map(item => {
-        th=document.createElement('th');
-        th=item;
-        tbody.insertAdjacentElement('beforeEnd', th);
-        tbody.insertAdjacentElement('beforeend', `<td><button>X</button></td>`)
-      }) 
+    this.elem.addEventListener('click', (event)=> this.clickRemove(event))
     }
 
-    return this.table=table; //приравниваем для передачи в геттер
-  }
-
-  get elem() {
-    return this.table; 
-  }
- 
+ clickRemove(event) {
+    if(event.target.tagName==='BUTTON') {
+        event.target.closest('tr').remove();
+    }
+ }
   
 }
 
