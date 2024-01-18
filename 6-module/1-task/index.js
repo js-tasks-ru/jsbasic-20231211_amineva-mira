@@ -15,7 +15,7 @@
 export default class UserTable {
   constructor(rows) {
     this.elem=document.createElement('table');
-    document.body.append(this.elem);
+    
 
     this.elem.innerHTML=`
     <thead>
@@ -31,7 +31,7 @@ export default class UserTable {
        
     </tbody>`
 
-    this.tbodyTable=document.querySelector('.rows');
+    this.tbodyTable=this.elem.querySelector('.rows');
 
     let cellsWithData=rows.map(obj => Object.values(obj).map(item => `<td>${item}</td>`).join(' '))
 
