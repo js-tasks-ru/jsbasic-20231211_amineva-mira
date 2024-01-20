@@ -18,6 +18,7 @@ export default class ProductCard {
         </button>
     </div>`
   
+  
     this.elem.addEventListener('click', (event)=> this.addProduct(event))
   }
 
