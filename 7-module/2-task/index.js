@@ -35,7 +35,7 @@ export default class Modal {
   }
 
   setBody(node) {
-    document.querySelector('.container').style.display='none';
+    this.elem.querySelector('.modal__body').innerHTML = '';
     this.elem.querySelector('.modal__body').append(node);
   }
 
@@ -56,6 +56,5 @@ export default class Modal {
   close() {
     document.body.classList.remove('is-modal-open');
     this.elem.remove();
-    document.querySelector('.container').style.display='';
   }
 }
