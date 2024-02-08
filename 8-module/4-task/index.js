@@ -29,15 +29,17 @@ export default class Cart {
   }
 
   updateProductCount(productId, amount) {
+    let cartItem;
     for(let item of this.cartItems) {
       if(item.product.id===productId) {
-        item.count= item.count+amount;
+        item.count = item.count+amount;
+        cartItem=item;
       }
       if(item.count===0) {
         this.cartItems.splice(this.cartItems.indexOf(item), 1);
       }
     }
-    this.onProductUpdate(this.cartItems);
+    this.onProductUpdate(cartItem);
   }
 
   isEmpty() {
@@ -137,23 +139,22 @@ export default class Cart {
        }
     })
     
-    modalCart.addEventListener('submit', event => this.onSubmit(event));
+    modalCart.querySelector('.cart-form').addEventListener('submit', event => this.onSubmit(event));
   }
 
   onProductUpdate(cartItem) {
     if(document.body.classList.contains('is-modal-open')) {
-      for(let item of this.cartItems) {
         let modalBody=document.querySelector('.modal__body');
-        let productId=item.product.id;
+        let productId=cartItem.product.id;
         let productCount = modalBody.querySelector(`[data-product-id="${productId}"] .cart-counter__count`);
         let productPrice = modalBody.querySelector(`[data-product-id="${productId}"] .cart-product__price`);
         let infoPrice = modalBody.querySelector(`.cart-buttons__info-price`);
 
-        productCount.innerHTML=item.count;
-        productPrice.innerHTML=`€${(item.product.price * item.count).toFixed(2)}`;
+        productCount.innerHTML=cartItem.count;
+        productPrice.innerHTML=`€${(cartItem.product.price * cartItem.count).toFixed(2)}`;
         infoPrice.innerHTML=`€${this.getTotalPrice().toFixed(2)}`;
 
-        if(item.count===0) {
+        if(cartItem.count===0) {
           modalBody.querySelector(`[data-product-id="${productId}"]`).remove()
         }
       }
@@ -161,47 +162,24 @@ export default class Cart {
       if (this.isEmpty()) {
         this.modal.close();
       }
-    }
 
     this.cartIcon.update(this);
   }
 
   async onSubmit(event) {
-    let form = event.target.closest('.cart-form');
-    if (form) {
       event.preventDefault();
 
       let modalBody = document.querySelector('.modal__body');
       let formModal = modalBody.querySelector('.cart-form');
       let btn = modalBody.querySelector("[type = 'submit']").classList.add("is-loading");
   
-      let formPost = new FormData(formModal);
-  
-      // fetch('https://httpbin.org/post', {
-      //   method: 'POST',
-      //   body: formPost
-      // })
-      //   .then(response => response.json())
-      //   .then(post => {
-      //     this.modal.setTitle("Success!");
-      //     this.cartItems.splice(0, this.cartItems.length);
-      //     modalBody.innerHTML=`
-      //       <div class="modal__body-inner">
-      //         <p>
-      //           Order successful! Your order is being cooked :) <br>
-      //           We’ll notify you about delivery time shortly.<br>
-      //           <img src="/assets/images/delivery.gif">
-      //         </p>
-      //       </div>`;
-      // });
+      let formData = new FormData(formModal);
   
       let response = await fetch('https://httpbin.org/post', {
         method: 'POST',
-        body: formPost
+        body: formData
       });
       if(response.ok) {
-        console.log('ok')
-        let post = await response.json();
         this.modal.setTitle("Success!");
         this.cartItems.splice(0, this.cartItems.length);
         modalBody.innerHTML=`
@@ -212,10 +190,9 @@ export default class Cart {
               <img src="/assets/images/delivery.gif">
             </p>
           </div>`;
+          this.cartIcon.update(this);
       }
     }
-  
-  };
 
   addEventListeners() {
     this.cartIcon.elem.onclick = () => this.renderModal();

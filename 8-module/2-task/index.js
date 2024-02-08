@@ -18,26 +18,30 @@ export default class ProductGrid {
   }
 
   updateFilter(filters) {
-    let filterArray=this.products.filter(item=> {
-      if (filters.noNuts && !item.nuts) {
-        return item;
-      }
-      if(filters.vegeterianOnly && item.vegeterian) {
-        return item;
-      }
-      if (filters.maxSpiciness>=item.spiciness) {
-        return item;
-      }
-      if (filters.category===item.category) {
-        return item;
-      }
-    })
-    this.renderFilterdCard(filterArray);
+    Object.assign(this.filters, filters);
+    this.renderFilterdCard();
   }
 
   renderFilterdCard(filter) {
-    let card=this.elem.querySelector('.products-grid__inner');
-    card.innerHTML='';
-    let productsCard = filter.map(item => createElement(card.append(new ProductCard(item).elem)));
+    let inner = this.elem.querySelector('.products-grid__inner');
+
+    inner.innerHTML = '';
+
+    for (let product of this.products) {
+      if (this.filters.noNuts && product.nuts) {continue;}
+
+      if (this.filters.vegeterianOnly && !product.vegeterian) {continue;}
+
+      if (this.filters.maxSpiciness !== undefined && product.spiciness > this.filters.maxSpiciness) {
+        continue;
+      }
+
+      if (this.filters.category && product.category != this.filters.category) {
+        continue;
+      }
+     
+      let card = new ProductCard(product);
+      inner.append(card.elem);
+    }
   }
 }

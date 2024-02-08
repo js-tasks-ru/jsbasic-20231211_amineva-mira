@@ -18,19 +18,21 @@ export default class Cart {
       return false;
     }
     this.cartItems.push({ product, count: 1 });
-    this.onProductUpdate(this.cartItem);
+    this.onProductUpdate(this.cartItems);
   }
 
   updateProductCount(productId, amount) {
+    let cartItem;
     for(let item of this.cartItems) {
       if(item.product.id===productId) {
-        item.count= item.count+amount;
+        item.count = item.count+amount;
+        cartItem=item;
       }
       if(item.count===0) {
         this.cartItems.splice(this.cartItems.indexOf(item), 1);
       }
     }
-    this.onProductUpdate(this.cartItem);
+    this.onProductUpdate(cartItem);
   }
 
   isEmpty() {
